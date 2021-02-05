@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:background="@color/dark_mid"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".ui.repository.list.RepositoryListFragment">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/top_guideline"
+        android:layout_width="wrap_content"
+        app:layout_constraintGuide_percent="0.2"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/not_found"
+        app:layout_constraintTop_toTopOf="@id/top_guideline"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintBottom_toTopOf="@id/not_found_image"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:textSize="24sp"
+        android:visibility="gone"
+        android:textAlignment="center"
+        android:textColor="@color/gold_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Oops...There are no repositories that match search query."/>
+
+    <ImageView
+        android:id="@+id/not_found_image"
+        android:layout_width="250dp"
+        android:layout_margin="20dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/not_found"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="300dp"
+        android:src="@drawable/ic_not_found"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/repository_recycler"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:visibility="visible"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/repository_item"
+        android:orientation="vertical"
+        android:layout_height="match_parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
