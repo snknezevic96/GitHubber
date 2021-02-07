@@ -1,9 +1,9 @@
 package com.futuradev.githubber.data.repository
 
+import com.futuradev.githubber.data.model.Owner
 import com.futuradev.githubber.data.model.Repository
-import com.futuradev.githubber.data.model.retrofit.response.OrganizationsResponse
-import com.futuradev.githubber.data.model.retrofit.response.SearchResponse
-import com.futuradev.githubber.utils.ResultWrapper
+import com.futuradev.githubber.data.model.retrofit.response.*
+import com.futuradev.githubber.utils.wrapper.ResultWrapper
 
 interface GitRepository {
 
@@ -12,4 +12,14 @@ interface GitRepository {
     suspend fun search(query: String) : ResultWrapper<SearchResponse>
 
     suspend fun getUserOrganizations(user: String) : ResultWrapper<OrganizationsResponse>
+
+    suspend fun getVerificationCodes() : ResultWrapper<VerificationCodesResponse>
+
+    suspend fun getToken(deviceCode: String) : ResultWrapper<TokenResponse>
+
+    suspend fun getUserData(token: String) : ResultWrapper<UserResponse>
+
+    suspend fun getFollowers() : ResultWrapper<List<Owner>>
+
+    suspend fun getFollowing() : ResultWrapper<List<Owner>>
 }

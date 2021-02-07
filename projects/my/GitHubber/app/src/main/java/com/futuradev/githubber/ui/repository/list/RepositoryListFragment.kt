@@ -8,17 +8,19 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.ui.repository.RepositoryViewModel
-import com.futuradev.githubber.utils.RepositoryListener
-import com.futuradev.githubber.utils.SearchController
-import com.futuradev.githubber.utils.ToolbarListener
+import com.futuradev.githubber.utils.listeners.ToolbarListener
+import com.futuradev.githubber.utils.listeners.RepositoryListener
+import com.futuradev.githubber.utils.listeners.SearchListener
 import com.futuradev.githubber.utils.showSnackMessage
 import kotlinx.android.synthetic.main.fragment_repository_list.*
+import kotlinx.android.synthetic.main.image_recycler_view.*
 import kotlinx.android.synthetic.main.main_toolbar.*
 import kotlinx.coroutines.*
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -26,7 +28,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class RepositoryListFragment(override val coroutineContext: CoroutineContext = Dispatchers.Main) :
-    Fragment(), CoroutineScope, SearchController, RepositoryListener {
+    Fragment(), CoroutineScope, ToolbarListener, RepositoryListener {
 
     private val viewModel: RepositoryViewModel by sharedViewModel()
 
@@ -43,10 +45,19 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as ToolbarListener).setSearchVisibility(View.VISIBLE)
+        showSearchPlaceholder()
 
+        customizeToolbar()
         setAdapters()
         setObservers()
+
+        search_placeholder.setOnClickListener {
+            (activity as SearchListener).requestSearchFocus()
+        }
+    }
+
+    private fun customizeToolbar() {
+        (activity as SearchListener).setSearchVisibility(View.VISIBLE)
     }
 
     private fun setAdapters() {
@@ -62,8 +73,8 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         viewModel.repositories.observe(viewLifecycleOwner, Observer {
             it ?: return@Observer
 
-            if(it.isEmpty())
-                showEmptyPlaceholder()
+            if (it.isEmpty())
+                showSearchNotFoundPlaceholder()
             else
                 refreshRecycler(it)
         })
@@ -72,20 +83,52 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
             it ?: return@Observer
 
             view?.showSnackMessage(it)
+            viewModel.errorMessage.value = null
         })
     }
 
-    private fun showEmptyPlaceholder() {
+    private fun showSearchNotFoundPlaceholder() {
         repository_recycler.visibility = View.GONE
-        not_found.visibility = View.VISIBLE
-        not_found_image.visibility = View.VISIBLE
+
+        label_not_found.apply {
+            visibility = View.VISIBLE
+            text = "Oops...There are no repositories that match search query."
+        }
+
+        search_placeholder.apply {
+            visibility = View.VISIBLE
+            setImageDrawable(
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_not_found, null)
+            )
+        }
     }
+
+    private fun showSearchPlaceholder() {
+        repository_recycler.visibility = View.GONE
+
+        label_not_found.apply {
+            visibility = View.VISIBLE
+            text = "Search GitHub\n repositories"
+        }
+
+        search_placeholder.apply {
+            visibility = View.VISIBLE
+            setImageDrawable(
+                ResourcesCompat.getDrawable(resources, R.drawable.ic_search, null)
+            )
+        }
+    }
+
     private fun refreshRecycler(list: List<Repository>) {
         repository_recycler.visibility = View.VISIBLE
-        not_found.visibility = View.GONE
-        not_found_image.visibility = View.GONE
+        label_not_found.visibility = View.GONE
+        search_placeholder.visibility = View.GONE
 
         adapter?.refreshData(list)
+    }
+
+    override fun toolbarLogoClicked() {
+        repository_recycler.smoothScrollToPosition(0)
     }
 
     override fun getTextWatcher(): TextWatcher = object: TextWatcher {
@@ -109,7 +152,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
                 if(searchText.isNotEmpty())
                     viewModel.search(searchText)
                 else
-                   refreshRecycler(emptyList())
+                   showSearchPlaceholder()
             }
         }
 

@@ -1,7 +1,11 @@
 package com.futuradev.githubber.utils
 
 import android.graphics.Color
+import android.util.Log
 import android.view.View
+import androidx.recyclerview.widget.LinearSmoothScroller
+import androidx.recyclerview.widget.RecyclerView
+import com.futuradev.githubber.utils.wrapper.ResultWrapper
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import retrofit2.HttpException
@@ -78,4 +82,23 @@ fun String.formatDate() : String {
     } catch (e: Exception) {
         return ""
     }
+}
+
+fun log(text: String) = Log.d("LOG:", text)
+
+fun RecyclerView.smoothSnapToPosition(
+    position: Int,
+    snapMode: Int = LinearSmoothScroller.SNAP_TO_START
+) {
+    val smoothScroller = object : LinearSmoothScroller(this.context) {
+        override fun getVerticalSnapPreference(): Int {
+            return snapMode
+        }
+
+        override fun getHorizontalSnapPreference(): Int {
+            return snapMode
+        }
+    }
+    smoothScroller.targetPosition = position
+    layoutManager?.startSmoothScroll(smoothScroller)
 }

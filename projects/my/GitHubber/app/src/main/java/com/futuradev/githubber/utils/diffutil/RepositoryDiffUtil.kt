@@ -1,4 +1,4 @@
-package com.futuradev.githubber.utils
+package com.futuradev.githubber.utils.diffutil
 
 import androidx.recyclerview.widget.DiffUtil
 import com.futuradev.githubber.data.model.Repository

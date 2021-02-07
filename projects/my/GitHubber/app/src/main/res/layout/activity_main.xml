@@ -5,17 +5,18 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:id="@+id/body"
         android:background="@color/dark_mid"
         android:layout_height="match_parent">
 
         <include
             android:id="@+id/toolbar"
             android:elevation="8dp"
-            android:layout_height="wrap_content"
+            android:layout_height="?actionBarSize"
             android:layout_width="match_parent"
             layout="@layout/main_toolbar" />
 
@@ -39,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="@color/white"
+        android:background="@color/dark_light"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/navigation_header"
         app:itemIconTint="@color/gold_text"

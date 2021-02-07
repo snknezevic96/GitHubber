@@ -9,10 +9,13 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="gold_dark">#de9e44</color>
-    <color name="gold">#CBB26A</color>
+    <color name="gold">#FFE188</color>
     <color name="gold_light">#d8c690</color>
     <color name="gold_text">#f8f5ec</color>
     <color name="gold_text_transparent">#80f8f5ec</color>
+    <color name="gold_text_transparent_more">#40d8c690</color>
+
+    <color name="gold_new">#FFE188</color>
 
     <color name="dark_light">#404040</color>
     <color name="dark_mid">#1b1b1b</color>

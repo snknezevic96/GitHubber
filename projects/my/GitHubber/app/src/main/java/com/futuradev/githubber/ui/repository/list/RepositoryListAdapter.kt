@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.Repository
-import com.futuradev.githubber.utils.RepositoryDiffUtil
-import com.futuradev.githubber.utils.RepositoryListener
-import kotlinx.android.synthetic.main.repository_item.view.*
+import com.futuradev.githubber.utils.diffutil.RepositoryDiffUtil
+import com.futuradev.githubber.utils.listeners.RepositoryListener
+import kotlinx.android.synthetic.main.repository_recycler_item.view.*
 
 class RepositoryListAdapter : RecyclerView.Adapter<RepositoryListAdapter.ViewHolder>() {
 
@@ -36,7 +36,7 @@ class RepositoryListAdapter : RecyclerView.Adapter<RepositoryListAdapter.ViewHol
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context
-        return ViewHolder(LayoutInflater.from(context).inflate(R.layout.repository_item, parent, false))
+        return ViewHolder(LayoutInflater.from(context).inflate(R.layout.repository_recycler_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

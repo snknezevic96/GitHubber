@@ -15,7 +15,7 @@ class GitHubber : Application() {
             androidContext(this@GitHubber)
 
             modules(
-                listOf(remoteModule, repositoryModule, viewModelModule)
+                listOf(appModule, databaseModule, remoteModule, repositoryModule, viewModelModule)
             )
 
             Stetho.initializeWithDefaults(applicationContext)

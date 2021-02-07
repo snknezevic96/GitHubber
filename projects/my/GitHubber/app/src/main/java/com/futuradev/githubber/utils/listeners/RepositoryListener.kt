@@ -1,4 +1,4 @@
-package com.futuradev.githubber.utils
+package com.futuradev.githubber.utils.listeners
 
 interface RepositoryListener {
 
