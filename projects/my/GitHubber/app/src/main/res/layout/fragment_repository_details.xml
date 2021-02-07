@@ -19,22 +19,19 @@
 
     <TextView
         android:id="@+id/owner_name"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/owner_thumbnail"
         app:layout_constraintTop_toTopOf="@id/owner_thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
         android:textStyle="bold"
         android:textSize="21sp"
         android:textColor="@color/gold_light"
         tools:text="JohnDude022"/>
 
-    <androidx.recyclerview.widget.RecyclerView
+    <com.futuradev.githubber.ui.ImageRecyclerView
         android:id="@+id/organizations_recycler"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:orientation="horizontal"
-        tools:listitem="@layout/organization_item"
         android:layout_width="0dp"
+        android:layout_marginStart="8dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="@id/owner_thumbnail"
         app:layout_constraintStart_toEndOf="@id/owner_thumbnail"
@@ -93,7 +90,7 @@
 
         <ImageView
             android:id="@+id/code_language_image"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/repository_name"
             android:src="@drawable/ic_code_language"
@@ -137,17 +134,26 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.4"/>
+            app:layout_constraintGuide_begin="169dp" />
 
-        <TextView
-            android:id="@+id/repository_description"
+        <ScrollView
+            android:id="@+id/scroll_description"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/gold_text"
+            android:scrollbars="vertical"
             app:layout_constraintTop_toBottomOf="@id/description_guideline_top"
-            app:layout_constraintBottom_toTopOf="@id/description_guideline_bottom"
-            tools:text="Here will go some text about description of this repository. That could be some small or some very big text, but it needs to go to mac 2 lines. I think this should be enough."/>
+            app:layout_constraintBottom_toTopOf="@id/description_guideline_bottom">
+
+            <TextView
+                android:id="@+id/repository_description"
+                android:layout_width="match_parent"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_height="match_parent"
+                android:textColor="@color/gold_text"
+                tools:text="Here will go some text about description of this repository. That could be some small or some very big text, but it needs to go to mac 2 lines. I think this should be enough."/>
+
+        </ScrollView>
 
 
         <androidx.constraintlayout.widget.Guideline
@@ -166,7 +172,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:background="@color/colorDivider"
-            app:layout_constraintTop_toBottomOf="@id/repository_description"/>
+            app:layout_constraintTop_toBottomOf="@id/scroll_description"/>
 
         <ImageView
             android:id="@+id/watcher_image"
@@ -197,7 +203,7 @@
             android:src="@drawable/ic_fork"
             app:layout_constraintTop_toBottomOf="@id/bottom_divider"
             app:layout_constraintStart_toEndOf="@id/watcher_image"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toStartOf="@id/issues_image"/>
 
         <TextView
             android:id="@+id/fork_number"
@@ -209,6 +215,27 @@
             app:layout_constraintBottom_toBottomOf="@id/fork_image"
             android:layout_height="wrap_content"
             tools:text="32"/>
+
+        <ImageView
+            android:id="@+id/issues_image"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_issue"
+            app:layout_constraintTop_toBottomOf="@id/bottom_divider"
+            app:layout_constraintStart_toEndOf="@id/fork_image"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <TextView
+            android:id="@+id/issues_number"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textColor="@color/gold_text"
+            app:layout_constraintStart_toEndOf="@id/issues_image"
+            app:layout_constraintTop_toTopOf="@id/issues_image"
+            app:layout_constraintBottom_toBottomOf="@id/issues_image"
+            android:layout_height="wrap_content"
+            tools:text="2"/>
 
         <!--
             <ImageView

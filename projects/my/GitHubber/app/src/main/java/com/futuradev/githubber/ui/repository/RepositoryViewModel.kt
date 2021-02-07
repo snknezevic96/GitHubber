@@ -13,10 +13,19 @@ import kotlinx.coroutines.launch
 
 class RepositoryViewModel(private val gitRepository: GitRepository) : ViewModel() {
 
+    val repository  = MutableLiveData<Repository>()
     val repositories = MutableLiveData<List<Repository>?>()
     val errorMessage = MutableLiveData<String>()
 
     val userOrganizations = MutableLiveData<List<Organization>>()
+
+    private fun List<Repository>.findRepository(repositoryId: Int) : Repository? = find { it.id == repositoryId }
+
+    fun findRepository(repositoryId: Int) = viewModelScope.launch(Dispatchers.IO) {
+        repositories.value
+            ?.findRepository(repositoryId)
+            ?.let { repository.postValue(it) }
+    }
 
     fun search(query: String) = viewModelScope.launch(Dispatchers.IO) {
 

@@ -1,10 +1,11 @@
 package com.futuradev.githubber.data.repository
 
 
+import com.futuradev.githubber.data.model.Owner
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.data.model.retrofit.response.*
 import com.futuradev.githubber.data.remote.GitService
-import com.futuradev.githubber.utils.ResultWrapper
+import com.futuradev.githubber.utils.wrapper.ResultWrapper
 
 class GitRepositoryImpl(private val gitService: GitService) : GitRepository {
 
@@ -16,5 +17,21 @@ class GitRepositoryImpl(private val gitService: GitService) : GitRepository {
 
     override suspend fun getUserOrganizations(user: String): ResultWrapper<OrganizationsResponse> =
         gitService.getUserOrganizations(user)
+
+    override suspend fun getVerificationCodes(): ResultWrapper<VerificationCodesResponse> =
+        gitService.requestVerificationCodes()
+
+    override suspend fun getToken(deviceCode: String): ResultWrapper<TokenResponse> =
+        gitService.getToken(deviceCode)
+
+    override suspend fun getUserData(token: String): ResultWrapper<UserResponse> =
+        gitService.getUserData(token)
+
+    override suspend fun getFollowers(): ResultWrapper<List<Owner>> =
+        gitService.getFollowers()
+
+    override suspend fun getFollowing(): ResultWrapper<List<Owner>> =
+        gitService.getFollowing()
+
 
 }

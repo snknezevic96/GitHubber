@@ -5,15 +5,25 @@
         <item name="colorPrimary">@color/gold_text</item>
         <item name="colorPrimaryDark">#194C5F</item>
         <item name="colorAccent">@color/gold_dark</item>
-        <item name="drawerArrowStyle">@style/WhiteDrawerIconStyle</item>
+        <item name="drawerArrowStyle">@style/Hamburger</item>
     </style>
 
-    <style name="WhiteDrawerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
+    <style name="Hamburger" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
-        <item name="color">@color/gold_text</item>
+        <item name="color">@color/gold_new</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">
+    </style>
+
+    <style name="HorizontalProgressBar">
+        <item name="android:fadeScrollbars">false</item>
+        <item name="android:scrollbarSize">1dp</item>
+        <item name="android:scrollbarStyle">insideInset</item>
+        <item name="android:scrollbarThumbHorizontal">@drawable/horizontal_progress_indicator</item>
+        <item name="android:scrollbarTrackHorizontal">@drawable/horizontal_progress_bg</item>
+        <item name="android:scrollbars">horizontal</item>
+        <item name="android:scrollbarAlwaysDrawHorizontalTrack">true</item>
     </style>
 
 </resources>
