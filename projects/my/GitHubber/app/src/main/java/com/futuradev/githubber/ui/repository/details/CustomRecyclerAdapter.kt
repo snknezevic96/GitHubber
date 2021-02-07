@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.CustomItemUrls
-import com.futuradev.githubber.utils.listeners.CustomRecyclerItemListener
+import com.futuradev.githubber.utils.listeners.ImageRecyclerItemListener
 import kotlinx.android.synthetic.main.image_recycler_item.view.*
 
 class CustomRecyclerAdapter : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder>() {
@@ -16,7 +16,7 @@ class CustomRecyclerAdapter : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHol
     private var context : Context? = null
     private var data = mutableListOf<CustomItemUrls>()
 
-    var listener : CustomRecyclerItemListener? = null
+    var listener : ImageRecyclerItemListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         context = parent.context

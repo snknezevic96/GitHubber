@@ -3,10 +3,11 @@ package com.futuradev.githubber.ui.main
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
@@ -15,6 +16,7 @@ import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.Glide
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.CustomItemUrls
+import com.futuradev.githubber.utils.enum.SortType
 import com.futuradev.githubber.utils.manager.KeyboardManager
 import com.futuradev.githubber.utils.listeners.ToolbarListener
 import com.futuradev.githubber.utils.listeners.SearchListener
@@ -37,6 +39,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private lateinit var drawerLayout : DrawerLayout
     private lateinit var sideView : NavigationView
 
+    private var menu : Menu? = null
     private var userId : Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +51,34 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setObservers()
 
         getUserIdFromArgs()?.let { viewModel.getUser(it) }
+    }
+
+    private fun setupNavigation() {
+
+        setSupportActionBar(toolbar.toolbar)
+
+        supportActionBar?.apply {
+            setDisplayHomeAsUpEnabled(true)
+            setDisplayShowHomeEnabled(true)
+
+            setHomeAsUpIndicator(R.drawable.ic_hamburger)
+        }
+
+        navController = findNavController(R.id.navigation_host_fragment)
+        drawerLayout = drawer_layout
+        sideView = navigation_drawer_view
+
+        val appBarConfig = AppBarConfiguration(
+            topLevelDestinationIds = setOf(
+                R.id.repositoryListFragment
+            ),
+            drawerLayout = drawerLayout
+        )
+
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig)
+        NavigationUI.setupWithNavController(sideView, navController)
+
+        sideView.setNavigationItemSelectedListener(this)
     }
 
     private fun setObservers() {
@@ -83,6 +114,31 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
+    private fun setupToolbar() {
+        getToolbarListener()?.let { fragment ->
+
+            toolbar.apply {
+
+                fragment.getTextWatcher().also { watcher ->
+                    watcher ?: return@also
+                    search.addTextChangedListener(watcher)
+                }
+
+                logo.setOnClickListener { fragment.toolbarLogoClicked() }
+            }
+        }
+    }
+
+    private fun getToolbarListener() : ToolbarListener? {
+        supportFragmentManager.findFragmentById(R.id.repositoryListFragment)
+
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment)
+
+        val fragment = navHostFragment?.childFragmentManager?.fragments?.first()
+
+        return (fragment as? ToolbarListener)
+    }
+
     private fun getUserIdFromArgs() : Int? {
         intent.extras?.let {
             userId = it.getInt("userId")
@@ -90,52 +146,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return userId
     }
 
-    private fun setupToolbar() {
-        supportFragmentManager.findFragmentById(R.id.repositoryListFragment)
-
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment)
-        val fragment : Fragment? = navHostFragment?.childFragmentManager?.fragments?.first()
-
-        if (fragment !is ToolbarListener) return
-
-        toolbar.apply {
-
-            fragment.getTextWatcher().also { watcher ->
-                watcher ?: return@also
-                search.addTextChangedListener(watcher)
+    private fun closeApp() {
+        Intent(Intent.ACTION_MAIN)
+            .apply {
+                addCategory(Intent.CATEGORY_HOME)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
             }
-
-            logo.setOnClickListener { fragment.toolbarLogoClicked() }
-        }
-
-    }
-
-    private fun setupNavigation() {
-
-        setSupportActionBar(toolbar.toolbar)
-
-        supportActionBar?.apply {
-            setDisplayHomeAsUpEnabled(true)
-            setDisplayShowHomeEnabled(true)
-
-            setHomeAsUpIndicator(R.drawable.ic_hamburger)
-        }
-
-        navController = findNavController(R.id.navigation_host_fragment)
-        drawerLayout = drawer_layout
-        sideView = navigation_drawer_view
-
-        val appBarConfig = AppBarConfiguration(
-            topLevelDestinationIds = setOf(
-                R.id.repositoryListFragment
-            ),
-            drawerLayout = drawerLayout
-        )
-
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig)
-        NavigationUI.setupWithNavController(sideView, navController)
-
-        sideView.setNavigationItemSelectedListener(this)
+            .also { startActivity(it) }
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -144,6 +161,47 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             else -> navController.popBackStack()
         }
         return true
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        item.isChecked = true
+
+        drawerLayout.closeDrawers()
+
+        return when(item.itemId) {
+
+            R.id.logout -> {
+                // TODO: logout
+                true
+            }
+            else -> false
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.search_menu, menu)
+        this.menu = menu
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        item.isChecked = !item.isChecked
+
+        return when(item.itemId) {
+            R.id.sort_stars -> {
+                getToolbarListener()?.sortBy(SortType.STARS)
+                true
+            }
+            R.id.sort_forks -> {
+                getToolbarListener()?.sortBy(SortType.FORKS)
+                true
+            }
+            R.id.sort_updated -> {
+                getToolbarListener()?.sortBy(SortType.UPDATED)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onBackPressed() {
@@ -164,32 +222,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun closeApp() {
-        Intent(Intent.ACTION_MAIN)
-            .apply {
-                addCategory(Intent.CATEGORY_HOME)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            }
-            .also { startActivity(it) }
-    }
-
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        item.isChecked = true
-
-        drawerLayout.closeDrawers()
-
-        return when(item.itemId) {
-
-            R.id.logout -> {
-                // TODO: logout
-                true
-            }
-            else -> false
-        }
-    }
-
     override fun setSearchVisibility(visibility: Int) {
         toolbar.search.visibility = visibility
+
+        menu?.findItem(R.id.sort_submenu_item)?.isVisible =
+            visibility == View.VISIBLE
     }
 
     override fun requestSearchFocus() {

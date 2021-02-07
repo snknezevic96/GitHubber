@@ -1,6 +1,6 @@
 package com.futuradev.githubber.utils.listeners
 
-interface CustomRecyclerItemListener {
+interface ImageRecyclerItemListener {
 
     fun onThumbnailClicked(url : String?)
 }

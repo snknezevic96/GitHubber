@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:visible="true"
+        android:id="@+id/sort_submenu_item"
+        android:title="Sort by"
+        android:enabled="true">
+
+        <menu>
+            <group android:checkableBehavior="single">
+
+                <item android:id="@+id/sort_forks"
+                    android:title="Forks"/>
+
+                <item android:id="@+id/sort_stars"
+                    android:title="Stars"/>
+
+                <item android:id="@+id/sort_updated"
+                    android:title="Date updated"/>
+            </group>
+        </menu>
+
+    </item>
+
+</menu>
