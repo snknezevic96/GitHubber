@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.CustomItemUrls
 import com.futuradev.githubber.ui.repository.details.CustomRecyclerAdapter
-import com.futuradev.githubber.utils.listeners.CustomRecyclerItemListener
+import com.futuradev.githubber.utils.listeners.ImageRecyclerItemListener
 import kotlinx.android.synthetic.main.image_recycler_view.view.*
 import org.koin.core.KoinComponent
 
@@ -26,7 +26,7 @@ class ImageRecyclerView @JvmOverloads constructor(
 
         recycler.adapter = adapter
 
-        adapter.listener = object : CustomRecyclerItemListener {
+        adapter.listener = object : ImageRecyclerItemListener {
             override fun onThumbnailClicked(url: String?) {
                 openInBrowser(context, url)
             }

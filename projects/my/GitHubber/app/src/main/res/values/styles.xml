@@ -10,7 +10,7 @@
 
     <style name="Hamburger" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
-        <item name="color">@color/gold_new</item>
+        <item name="color">@color/gold</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">

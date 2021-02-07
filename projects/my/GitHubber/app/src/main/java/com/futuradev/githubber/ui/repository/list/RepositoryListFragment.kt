@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.ui.repository.RepositoryViewModel
+import com.futuradev.githubber.utils.enum.SortType
 import com.futuradev.githubber.utils.listeners.ToolbarListener
 import com.futuradev.githubber.utils.listeners.RepositoryListener
 import com.futuradev.githubber.utils.listeners.SearchListener
@@ -119,12 +120,12 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         }
     }
 
-    private fun refreshRecycler(list: List<Repository>) {
+    private fun refreshRecycler(list: Array<Repository>) {
         repository_recycler.visibility = View.VISIBLE
         label_not_found.visibility = View.GONE
         search_placeholder.visibility = View.GONE
 
-        adapter?.refreshData(list)
+        adapter?.refreshData(list.toList())
     }
 
     override fun toolbarLogoClicked() {
@@ -157,6 +158,11 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         }
 
         override fun afterTextChanged(s: Editable?) {}
+    }
+
+    override fun sortBy(sortType: SortType) {
+        viewModel.sortBy(sortType)
+        repository_recycler.smoothScrollToPosition(0)
     }
 
     override fun openOwnersProfile(profileUrl: String) {

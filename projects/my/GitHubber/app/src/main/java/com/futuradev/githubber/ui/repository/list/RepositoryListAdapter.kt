@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.utils.diffutil.RepositoryDiffUtil
+import com.futuradev.githubber.utils.enum.SortType
 import com.futuradev.githubber.utils.listeners.RepositoryListener
 import kotlinx.android.synthetic.main.repository_recycler_item.view.*
 
