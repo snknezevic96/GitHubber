@@ -15,13 +15,13 @@ import kotlinx.coroutines.launch
 class RepositoryViewModel(private val gitRepository: GitRepository) : ViewModel() {
 
     val repository  = MutableLiveData<Repository>()
-    val repositories = MutableLiveData<Array<Repository>?>()
+    val repositories = MutableLiveData<Array<Repository?>?>()
     val errorMessage = MutableLiveData<String>()
     val userOrganizations = MutableLiveData<List<Organization>>()
 
     private var sortType : SortType? = null
 
-    private fun Array<Repository>.findRepository(repositoryId: Int) : Repository? = find { it.id == repositoryId }
+    private fun Array<Repository?>.findRepository(repositoryId: Int) : Repository? = find { it?.id == repositoryId }
 
     fun findRepository(repositoryId: Int) = viewModelScope.launch(Dispatchers.IO) {
         repositories.value
@@ -29,15 +29,16 @@ class RepositoryViewModel(private val gitRepository: GitRepository) : ViewModel(
             ?.let { repository.postValue(it) }
     }
 
-    private fun postRepositories(sortType: SortType?, list: Array<Repository>?) {
+    private fun postRepositories(sortType: SortType?, list: Array<Repository?>?) {
 
         repositories.postValue(list?.apply {
+
             when(sortType) {
-                SortType.STARS -> sortByDescending { it.stargazers_count }
-                SortType.FORKS -> sortByDescending { it.forks_count }
-                SortType.UPDATED -> sortByDescending { it.updated_at }
+                SortType.STARS -> sortByDescending { it?.stargazers_count }
+                SortType.FORKS -> sortByDescending { it?.forks_count }
+                SortType.UPDATED -> sortByDescending { it?.updated_at }
             }
-        })
+        } ?: emptyArray())
     }
 
     fun sortBy(sortType: SortType) = viewModelScope.launch(Dispatchers.IO) {
@@ -50,7 +51,7 @@ class RepositoryViewModel(private val gitRepository: GitRepository) : ViewModel(
 
         gitRepository.search(query).getResult(
             success = {
-                      postRepositories(sortType, it.items.toTypedArray())
+                      postRepositories(sortType, it.items?.toTypedArray())
             },
             genericError = { code, message ->
                 when(code) {

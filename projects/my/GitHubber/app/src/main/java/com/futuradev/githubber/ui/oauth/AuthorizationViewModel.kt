@@ -24,6 +24,7 @@ class AuthorizationViewModel(private val gitRepository: GitRepository,
 
         gitRepository.getUserData(token).getResult(
             success = {
+                dataPersistence.userId = it.id
                 database.userDao().insert(it)
                 user.postValue(it)
                 log("GIT SUCCESS - user data")

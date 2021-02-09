@@ -28,7 +28,6 @@ class CustomRecyclerAdapter : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHol
         val current = data[position]
 
         holder.apply {
-
             context?.let {
                 Glide
                     .with(it)

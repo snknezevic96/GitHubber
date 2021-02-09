@@ -1,19 +1,27 @@
 package com.futuradev.githubber.ui.repository.details
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.CustomItemUrls
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.ui.repository.RepositoryViewModel
 import com.futuradev.githubber.utils.manager.KeyboardManager
-import com.futuradev.githubber.utils.listeners.SearchListener
+import com.futuradev.githubber.utils.listeners.ToolbarListener
 import com.futuradev.githubber.utils.formatDate
 import kotlinx.android.synthetic.main.fragment_repository_details.*
 import org.koin.android.ext.android.inject
@@ -69,6 +77,29 @@ class RepositoryDetailsFragment : Fragment() {
         Glide.with(this@RepositoryDetailsFragment)
             .load(repository.owner.avatar_url)
             .circleCrop()
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+
+            })
             .into(owner_thumbnail)
 
         repository_name.text = repository.name
@@ -88,6 +119,9 @@ class RepositoryDetailsFragment : Fragment() {
     }
 
     private fun customizeToolbar() {
-        (activity as? SearchListener)?.setSearchVisibility(View.GONE)
+        (activity as ToolbarListener).apply {
+            setSearchVisibility(View.GONE)
+            setLoginButtonVisibility(View.VISIBLE)
+        }
     }
 }

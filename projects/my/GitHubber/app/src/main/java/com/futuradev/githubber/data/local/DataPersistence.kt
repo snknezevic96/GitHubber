@@ -11,6 +11,12 @@ class DataPersistence(private val context: Context) {
         sharedPref = context.getSharedPreferences(GIT_HUBBER_PREFS, Context.MODE_PRIVATE)
     }
 
+    var userId : Int
+    get() = sharedPref.getInt(USER_ID, -1)
+        set(value) = sharedPref.edit()
+            .putInt(USER_ID, value)
+            .apply()
+
     var userToken : String
         get() = sharedPref.getString(USER_TOKEN, "") ?: ""
         set(value) = sharedPref.edit()
@@ -32,6 +38,7 @@ class DataPersistence(private val context: Context) {
     companion object {
         const val GIT_HUBBER_PREFS = "git_hubber_prefs"
 
+        const val USER_ID = "user_id"
         const val USER_TOKEN = "user_token"
         const val USER_CODE = "user_code"
         const val DEVICE_CODE = "device_code"

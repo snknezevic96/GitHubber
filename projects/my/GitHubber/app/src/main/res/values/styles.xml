@@ -6,11 +6,14 @@
         <item name="colorPrimaryDark">#194C5F</item>
         <item name="colorAccent">@color/gold_dark</item>
         <item name="drawerArrowStyle">@style/Hamburger</item>
+
+        <!-- menu dots -->
+        <item name="android:textColorSecondary">@color/gold_text</item>
     </style>
 
     <style name="Hamburger" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
-        <item name="color">@color/gold</item>
+        <item name="color">@color/gold_text</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">

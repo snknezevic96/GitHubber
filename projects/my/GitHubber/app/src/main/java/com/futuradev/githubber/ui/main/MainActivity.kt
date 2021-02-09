@@ -16,11 +16,11 @@ import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.Glide
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.CustomItemUrls
+import com.futuradev.githubber.utils.*
 import com.futuradev.githubber.utils.enum.SortType
 import com.futuradev.githubber.utils.manager.KeyboardManager
+import com.futuradev.githubber.utils.listeners.ToolbarController
 import com.futuradev.githubber.utils.listeners.ToolbarListener
-import com.futuradev.githubber.utils.listeners.SearchListener
-import com.futuradev.githubber.utils.showSnackMessage
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.main_toolbar.view.*
@@ -30,17 +30,18 @@ import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    SearchListener {
+    ToolbarListener {
 
     private val keyboardManager : KeyboardManager by inject()
+    private val appConfig : AppConfig by inject()
     private val viewModel : MainViewModel by viewModel()
+
+    var topMenu : Menu? = null
+
 
     private lateinit var navController : NavController
     private lateinit var drawerLayout : DrawerLayout
     private lateinit var sideView : NavigationView
-
-    private var menu : Menu? = null
-    private var userId : Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,8 +50,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setupNavigation()
         setupToolbar()
         setObservers()
-
-        getUserIdFromArgs()?.let { viewModel.getUser(it) }
     }
 
     private fun setupNavigation() {
@@ -78,38 +77,59 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig)
         NavigationUI.setupWithNavController(sideView, navController)
 
-        sideView.setNavigationItemSelectedListener(this)
+        sideView.apply {
+            setNavigationItemSelectedListener(this@MainActivity)
+
+            appConfig.isPremiumVersion {
+                menu.findItem(R.id.premium_app).isVisible = false
+            }
+        }
     }
 
     private fun setObservers() {
 
         viewModel.user.observe(this, Observer {
-            it ?: return@Observer
+            if (it == null) {
+                sideView.apply {
+                    getHeaderView(0).header_body.visibility = View.GONE
+                    getHeaderView(0).header_logo.visibility = View.VISIBLE
 
-            sideView.getHeaderView(0).apply {
+                    menu.findItem(R.id.logout).isVisible = false
+                }
+                topMenu?.apply { findItem(R.id.login)?.isVisible  = true }
 
-                Glide.with(this)
-                    .load(it.avatar_url)
-                    .circleCrop()
-                    .into(user_thumbnail)
+            } else {
+                sideView.apply {
+                    getHeaderView(0).apply {
+                        header_body.visibility = View.VISIBLE
+                        header_logo.visibility = View.GONE
 
-                username.text = it.login
+                        menu.findItem(R.id.logout).isVisible = true
+
+                        Glide.with(this)
+                            .load(it.avatar_url)
+                            .circleCrop()
+                            .into(user_thumbnail)
+
+                        username.text = it.login
+                    }
+
+                    topMenu?.apply { findItem(R.id.login)?.isVisible  = false }
+
+                    viewModel.apply { getFollowers() }
+                }
             }
         })
 
         viewModel.followers.observe(this, Observer {
-            it ?: return@Observer
-
             sideView.getHeaderView(0).apply {
-                followers_recycler.setData("Followers", it.map { CustomItemUrls(it.avatar_url, it.html_url) })
+                followers_recycler.setData("Followers", it?.map { CustomItemUrls(it.avatar_url, it.html_url) } ?: emptyList())
             }
         })
 
         viewModel.following.observe(this, Observer {
-            it ?: return@Observer
-
             sideView.getHeaderView(0).apply {
-                following_recycler.setData("Following", it.map { CustomItemUrls(it.avatar_url, it.html_url) })
+                following_recycler.setData("Following", it?.map { CustomItemUrls(it.avatar_url, it.html_url) } ?: emptyList())
             }
         })
     }
@@ -129,21 +149,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun getToolbarListener() : ToolbarListener? {
+    private fun getToolbarListener() : ToolbarController? {
         supportFragmentManager.findFragmentById(R.id.repositoryListFragment)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment)
 
         val fragment = navHostFragment?.childFragmentManager?.fragments?.first()
 
-        return (fragment as? ToolbarListener)
-    }
-
-    private fun getUserIdFromArgs() : Int? {
-        intent.extras?.let {
-            userId = it.getInt("userId")
-        }
-        return userId
+        return (fragment as? ToolbarController)
     }
 
     private fun closeApp() {
@@ -171,7 +184,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return when(item.itemId) {
 
             R.id.logout -> {
-                // TODO: logout
+                viewModel.logout()
+                true
+            }
+
+            R.id.premium_app -> {
+                UpdateDialog.newInstance().show(supportFragmentManager, "")
                 true
             }
             else -> false
@@ -179,8 +197,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.search_menu, menu)
-        this.menu = menu
+        appConfig.isPremiumVersion {
+            menuInflater.inflate(R.menu.search_menu, menu)
+
+            topMenu = menu?.apply {
+                findItem(R.id.login).isVisible = viewModel.user.value == null
+            }
+        }
         return true
     }
 
@@ -198,6 +221,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.sort_updated -> {
                 getToolbarListener()?.sortBy(SortType.UPDATED)
+                true
+            }
+            R.id.login -> {
+                navController.navigate(R.id.authorizationFragment)
+                //navigateTo(AuthorizationActivity::class.java)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -225,12 +253,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun setSearchVisibility(visibility: Int) {
         toolbar.search.visibility = visibility
 
-        menu?.findItem(R.id.sort_submenu_item)?.isVisible =
+        topMenu?.findItem(R.id.sort_submenu_item)?.isVisible =
             visibility == View.VISIBLE
     }
 
     override fun requestSearchFocus() {
         toolbar.search.requestFocus()
         keyboardManager.showKeyboard(this)
+    }
+
+    override fun setLoginButtonVisibility(visibility: Int) {
+        topMenu?.findItem(R.id.login)?.isVisible =
+            visibility == View.VISIBLE
     }
 }

@@ -69,7 +69,7 @@ data class Repository(
     val tags_url: String,
     val teams_url: String,
     val trees_url: String,
-    val updated_at: String,
+    val updated_at: String?,
     val url: String,
     val watchers: Int,
     val watchers_count: Int

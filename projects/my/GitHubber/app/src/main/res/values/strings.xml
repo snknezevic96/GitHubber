@@ -1,5 +1,8 @@
 <resources>
-    <string name="app_name">GitHubber</string>
+    <string name="appLabel">GitHubber</string>
 
     <string name="menu_logout">Log out</string>
+
+    <string name="download_progress">%s (%d\%%)</string>
+
 </resources>

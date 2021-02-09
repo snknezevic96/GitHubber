@@ -1,28 +1,40 @@
 package com.futuradev.githubber.ui.oauth
 
-import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.futuradev.githubber.R
-import com.futuradev.githubber.ui.main.MainActivity
-import kotlinx.android.synthetic.main.activity_authorization.*
+import com.futuradev.githubber.utils.listeners.ToolbarListener
+import kotlinx.android.synthetic.main.fragment_authorization.*
+import kotlinx.coroutines.*
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.lang.StringBuilder
+import kotlin.coroutines.CoroutineContext
 
-class AuthorizationActivity : AppCompatActivity() {
+class AuthorizationFragment(override val coroutineContext: CoroutineContext = Dispatchers.Main) : Fragment(), CoroutineScope {
 
     private val viewModel : AuthorizationViewModel by viewModel()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_authorization)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_authorization, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        customizeToolbar()
         setObservers()
 
         viewModel.checkVerificationCodes()
@@ -30,7 +42,7 @@ class AuthorizationActivity : AppCompatActivity() {
 
     private fun setObservers() {
 
-        viewModel.verificationCodes.observe(this, Observer {
+        viewModel.verificationCodes.observe(viewLifecycleOwner, Observer {
             it ?: return@Observer
 
             setupWebView()
@@ -38,18 +50,11 @@ class AuthorizationActivity : AppCompatActivity() {
             web_view?.loadUrl(it.verificationUri)
         })
 
-        viewModel.user.observe(this, Observer {
+        viewModel.user.observe(viewLifecycleOwner, Observer {
             it ?: return@Observer
 
-            goToMainActivity(it.id)
+            findNavController().popBackStack()
         })
-    }
-
-    private fun goToMainActivity(userId: Int) {
-        val intent = Intent(this, MainActivity::class.java)
-        val bundle = Bundle().apply { putInt("userId", userId) }
-
-        startActivity(intent.apply { putExtras(bundle) })
     }
 
     private fun setupWebView() {
@@ -88,8 +93,14 @@ class AuthorizationActivity : AppCompatActivity() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
 
-                if(url == "https://github.com/login/device")
-                    view?.loadUrl(getVerificationJavaScript())
+                if(url == "https://github.com/login/device") {
+                    launch(coroutineContext) {
+                        progress.visibility = View.VISIBLE
+                        delay(1500)
+                        view?.loadUrl(getVerificationJavaScript())
+                        progress.visibility = View.GONE
+                    }
+                }
             }
         }
     }
@@ -103,5 +114,11 @@ class AuthorizationActivity : AppCompatActivity() {
         }.toString()
     }
 
+    private fun customizeToolbar() {
+        (activity as ToolbarListener).apply {
+            setSearchVisibility(View.GONE)
+            setLoginButtonVisibility(View.GONE)
+        }
 
+    }
 }
