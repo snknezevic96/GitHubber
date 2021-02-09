@@ -1,7 +1,5 @@
 package com.futuradev.githubber.ui.repository.list
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -18,6 +15,7 @@ import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.ui.repository.RepositoryViewModel
 import com.futuradev.githubber.utils.*
 import com.futuradev.githubber.utils.enum.SortType
+import com.futuradev.githubber.utils.listeners.BrowserListener
 import com.futuradev.githubber.utils.listeners.RepositoryListener
 import com.futuradev.githubber.utils.listeners.ToolbarController
 import com.futuradev.githubber.utils.listeners.ToolbarListener
@@ -54,7 +52,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
         customizeToolbar()
         setAdapters()
-        setObservers(view)
+        setObservers()
 
         search_placeholder.setOnClickListener {
             (activity as ToolbarListener).requestSearchFocus()
@@ -64,7 +62,6 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
     private fun customizeToolbar() {
         (activity as ToolbarListener).apply {
             setSearchVisibility(View.VISIBLE)
-            setLoginButtonVisibility(View.VISIBLE)
         }
     }
 
@@ -76,20 +73,15 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         repository_recycler.adapter = adapter
     }
 
-    private fun setObservers(view: View) {
+    private fun setObservers() {
 
         viewModel.repositories.observe(viewLifecycleOwner, Observer {
             it ?: return@Observer
 
             if (it.isEmpty())
                 showSearchNotFoundPlaceholder()
-            else {
+            else
                 refreshRecycler(it)
-
-                (view.parent as? ViewGroup)?.doOnPreDraw {
-                    startPostponedEnterTransition()
-                }
-            }
         })
 
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
@@ -105,7 +97,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
         label_not_found.apply {
             visibility = View.VISIBLE
-            text = "Oops...There are no repositories that match search query."
+            text = resources.getString(R.string.fragment_repository_list_no_search_result)
         }
 
         search_placeholder.apply {
@@ -121,7 +113,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
         label_not_found.apply {
             visibility = View.VISIBLE
-            text = "Search GitHub\n repositories"
+            text = resources.getString(R.string.fragment_repository_list_search)
         }
 
         search_placeholder.apply {
@@ -179,7 +171,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
     override fun openOwnersProfile(profileUrl: String) {
         appConfig.isPremiumVersion {
-            openInBrowser(profileUrl)
+            (activity as? BrowserListener)?.openInBrowser(profileUrl)
         }
     }
 
@@ -189,10 +181,5 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
                 findNavController().navigate(it)
             }
         }
-    }
-
-    private fun openInBrowser(url: String) {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(browserIntent)
     }
 }

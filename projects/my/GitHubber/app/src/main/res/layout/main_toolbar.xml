@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
     android:elevation="9dp"
-    android:background="@color/dark_mid"
-    android:theme="@style/AppTheme"
+    android:background="@color/color_dark_mid"
+    android:theme="@style/ToolbarTheme"
     app:popupTheme="@style/AppTheme.PopupOverlay">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -23,15 +23,14 @@
         <EditText
             android:id="@+id/search"
             android:layout_marginStart="8dp"
-            android:hint="Search..."
-            android:textColorHint="@color/gold_text_transparent"
-            android:backgroundTint="@color/gold_text_transparent_more"
-            android:textColor="@color/gold_text"
+            android:hint="@string/toolbar_search_hint"
+            android:textColorHint="@color/color_gold_et_bg"
+            android:backgroundTint="@color/color_gold_et_bg"
+            android:textColor="@color/color_gold_text"
             android:maxLines="1"
             android:inputType="text"
             android:scrollbars="horizontal"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/logo"
             android:layout_width="0dp"

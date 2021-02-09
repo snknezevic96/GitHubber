@@ -1,6 +1,7 @@
 package com.futuradev.githubber.ui.main
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -15,29 +16,32 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.bumptech.glide.Glide
 import com.futuradev.githubber.R
-import com.futuradev.githubber.data.model.CustomItemUrls
+import com.futuradev.githubber.data.model.ImageItemUrls
+import com.futuradev.githubber.ui.custom.DownloadDialog
 import com.futuradev.githubber.utils.*
 import com.futuradev.githubber.utils.enum.SortType
+import com.futuradev.githubber.utils.listeners.BrowserListener
+import com.futuradev.githubber.utils.listeners.DownloadListener
 import com.futuradev.githubber.utils.manager.KeyboardManager
 import com.futuradev.githubber.utils.listeners.ToolbarController
 import com.futuradev.githubber.utils.listeners.ToolbarListener
 import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 import kotlinx.android.synthetic.main.main_toolbar.view.*
+import kotlinx.android.synthetic.main.main_toolbar.view.toolbar
 import kotlinx.android.synthetic.main.navigation_header.*
 import kotlinx.android.synthetic.main.navigation_header.view.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener,
-    ToolbarListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, ToolbarListener, BrowserListener {
 
     private val keyboardManager : KeyboardManager by inject()
     private val appConfig : AppConfig by inject()
     private val viewModel : MainViewModel by viewModel()
 
-    var topMenu : Menu? = null
-
+    private var topMenu : Menu? = null
 
     private lateinit var navController : NavController
     private lateinit var drawerLayout : DrawerLayout
@@ -48,13 +52,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
 
         setupNavigation()
-        setupToolbar()
+        setupToolbarController()
+
         setObservers()
     }
 
     private fun setupNavigation() {
+        drawerLayout = drawer_layout
+        sideView = navigation_drawer_view
+        navController = findNavController(R.id.navigation_host_fragment)
 
-        setSupportActionBar(toolbar.toolbar)
+        toolbar.initActionBar().also {
+            NavigationUI.setupActionBarWithNavController(this, navController, it)
+            NavigationUI.setupWithNavController(sideView, navController)
+        }
+        sideView.initSideMenu()
+    }
+
+    private fun View.initActionBar() : AppBarConfiguration {
+        setSupportActionBar(this.toolbar)
 
         supportActionBar?.apply {
             setDisplayHomeAsUpEnabled(true)
@@ -63,79 +79,78 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             setHomeAsUpIndicator(R.drawable.ic_hamburger)
         }
 
-        navController = findNavController(R.id.navigation_host_fragment)
-        drawerLayout = drawer_layout
-        sideView = navigation_drawer_view
-
-        val appBarConfig = AppBarConfiguration(
+        return AppBarConfiguration(
             topLevelDestinationIds = setOf(
                 R.id.repositoryListFragment
             ),
             drawerLayout = drawerLayout
         )
+    }
 
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig)
-        NavigationUI.setupWithNavController(sideView, navController)
+    private fun NavigationView.initSideMenu() {
+        setNavigationItemSelectedListener(this@MainActivity)
 
-        sideView.apply {
-            setNavigationItemSelectedListener(this@MainActivity)
+        appConfig.isPremiumVersion {
+            menu.findItem(R.id.premium_app).isVisible = false
+        }
 
-            appConfig.isPremiumVersion {
-                menu.findItem(R.id.premium_app).isVisible = false
+        getHeaderView(0).user_thumbnail.setOnClickListener {
+            viewModel.getUserProfileUrl()?.let {
+                openInBrowser(it)
             }
         }
     }
 
     private fun setObservers() {
 
-        viewModel.user.observe(this, Observer {
-            if (it == null) {
+        viewModel.user.observe(this, Observer { user ->
+            if (user == null) {
                 sideView.apply {
                     getHeaderView(0).header_body.visibility = View.GONE
                     getHeaderView(0).header_logo.visibility = View.VISIBLE
 
                     menu.findItem(R.id.logout).isVisible = false
                 }
-                topMenu?.apply { findItem(R.id.login)?.isVisible  = true }
-
+                setLoginButtonVisibility(View.VISIBLE)
             } else {
                 sideView.apply {
                     getHeaderView(0).apply {
                         header_body.visibility = View.VISIBLE
                         header_logo.visibility = View.GONE
 
-                        menu.findItem(R.id.logout).isVisible = true
-
                         Glide.with(this)
-                            .load(it.avatar_url)
+                            .load(user.avatar_url)
                             .circleCrop()
                             .into(user_thumbnail)
 
-                        username.text = it.login
+                        username.text = user.login
                     }
-
-                    topMenu?.apply { findItem(R.id.login)?.isVisible  = false }
-
-                    viewModel.apply { getFollowers() }
+                    menu.findItem(R.id.logout).isVisible = true
                 }
+                setLoginButtonVisibility(View.GONE)
+                viewModel.apply { getFollowers() }
             }
         })
 
         viewModel.followers.observe(this, Observer {
+            it ?: return@Observer
+
             sideView.getHeaderView(0).apply {
-                followers_recycler.setData("Followers", it?.map { CustomItemUrls(it.avatar_url, it.html_url) } ?: emptyList())
+                followers_recycler.setData("Followers", it.map { ImageItemUrls(it.avatar_url, it.html_url) })
             }
         })
 
         viewModel.following.observe(this, Observer {
+            it ?: return@Observer
+
             sideView.getHeaderView(0).apply {
-                following_recycler.setData("Following", it?.map { CustomItemUrls(it.avatar_url, it.html_url) } ?: emptyList())
+                following_recycler.setData("Following", it.map { ImageItemUrls(it.avatar_url, it.html_url) })
             }
         })
     }
 
-    private fun setupToolbar() {
-        getToolbarListener()?.let { fragment ->
+    private fun setupToolbarController() {
+        getToolbarController()?.let { fragment ->
 
             toolbar.apply {
 
@@ -149,7 +164,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-    private fun getToolbarListener() : ToolbarController? {
+    private fun getToolbarController() : ToolbarController? {
         supportFragmentManager.findFragmentById(R.id.repositoryListFragment)
 
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.navigation_host_fragment)
@@ -171,6 +186,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onSupportNavigateUp(): Boolean {
         when(navController.currentDestination?.id) {
             R.id.repositoryListFragment -> drawerLayout.openDrawer(GravityCompat.START)
+            R.id.authorizationFragment -> {
+                setLoginButtonVisibility(View.VISIBLE)
+                navController.popBackStack()
+            }
             else -> navController.popBackStack()
         }
         return true
@@ -189,7 +208,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
 
             R.id.premium_app -> {
-                UpdateDialog.newInstance().show(supportFragmentManager, "")
+                DownloadDialog.newInstance()
+                    .apply {
+                        listener = object : DownloadListener {
+                            override fun downloadFinished() {
+                                dismiss()
+                            }
+
+                            override fun downloadError() {
+                                dismiss()
+                                body.showSnackMessage(resources.getString(R.string.download_dialog_error))
+                            }
+
+                        }
+                    }
+                    .show(supportFragmentManager, "")
                 true
             }
             else -> false
@@ -212,20 +245,19 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         return when(item.itemId) {
             R.id.sort_stars -> {
-                getToolbarListener()?.sortBy(SortType.STARS)
+                getToolbarController()?.sortBy(SortType.STARS)
                 true
             }
             R.id.sort_forks -> {
-                getToolbarListener()?.sortBy(SortType.FORKS)
+                getToolbarController()?.sortBy(SortType.FORKS)
                 true
             }
             R.id.sort_updated -> {
-                getToolbarListener()?.sortBy(SortType.UPDATED)
+                getToolbarController()?.sortBy(SortType.UPDATED)
                 true
             }
             R.id.login -> {
                 navController.navigate(R.id.authorizationFragment)
-                //navigateTo(AuthorizationActivity::class.java)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -242,8 +274,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                     viewModel.appClosing(
                         closeApp = { closeApp() },
-                        showMessage = { body.showSnackMessage("Please click BACK again to close app.") }
+                        showMessage = { body.showSnackMessage(resources.getString(R.string.close_app)) }
                     )
+                }
+                R.id.authorizationFragment -> {
+                    setLoginButtonVisibility(View.VISIBLE)
+                    super.onBackPressed()
                 }
                 else -> super.onBackPressed()
             }
@@ -253,8 +289,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun setSearchVisibility(visibility: Int) {
         toolbar.search.visibility = visibility
 
-        topMenu?.findItem(R.id.sort_submenu_item)?.isVisible =
-            visibility == View.VISIBLE
+        topMenu?.findItem(R.id.sort_submenu_item)?.isVisible = visibility == View.VISIBLE
     }
 
     override fun requestSearchFocus() {
@@ -263,7 +298,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun setLoginButtonVisibility(visibility: Int) {
-        topMenu?.findItem(R.id.login)?.isVisible =
-            visibility == View.VISIBLE
+        topMenu?.apply {
+            findItem(R.id.login)?.isVisible = visibility == View.VISIBLE
+        }
+    }
+
+    override fun openInBrowser(url: String) {
+        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(browserIntent)
     }
 }

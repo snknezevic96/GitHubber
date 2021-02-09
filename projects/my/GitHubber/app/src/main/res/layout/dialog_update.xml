@@ -8,7 +8,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/dark_mid"
+        android:background="@color/color_dark_mid"
         android:gravity="center"
         android:orientation="vertical"
         android:padding="10dp">
@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            android:textColor="@color/gold"
+            android:textColor="@color/color_gold"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/title" />
 
@@ -43,9 +43,9 @@
             app:layout_constraintTop_toBottomOf="@id/message">
 
             <Button
-                android:id="@+id/btnClose"
-                android:background="@color/red"
-                android:textColor="@color/black"
+                android:id="@+id/cancel"
+                android:background="@color/color_red"
+                android:textColor="@color/color_dark_full"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
@@ -54,26 +54,26 @@
                 app:layout_constraintWidth_percent="0.5" />
 
             <Button
-                android:id="@+id/btnUpdate"
-                android:background="@color/gold"
-                android:textColor="@color/black"
+                android:id="@+id/download"
+                android:background="@color/color_gold"
+                android:textColor="@color/color_dark_full"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                app:layout_constraintLeft_toRightOf="@id/btnClose"
+                app:layout_constraintLeft_toRightOf="@id/cancel"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/progress"
+            android:id="@+id/progress_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:fontFamily="sans-serif-medium"
             android:gravity="center"
             android:padding="5dp"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             android:textSize="18sp"
             android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -81,7 +81,7 @@
             app:layout_constraintTop_toBottomOf="@id/message" />
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progress"
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="30dp"
@@ -91,11 +91,11 @@
             android:max="100"
             android:minWidth="200dp"
             android:minHeight="50dp"
-            android:progressTint="@color/gold_text"
+            android:progressTint="@color/color_gold_text"
             android:visibility="gone"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/progress" />
+            app:layout_constraintTop_toBottomOf="@id/progress_text" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

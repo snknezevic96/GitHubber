@@ -1,10 +1,10 @@
-package com.futuradev.githubber.data.model.retrofit.response
+package com.futuradev.githubber.data.model.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-class UserResponse(
+class User(
     @PrimaryKey
     var id: Int = 0,
     var avatar_url: String?= null,

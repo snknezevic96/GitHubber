@@ -20,7 +20,7 @@
         android:orientation="horizontal"/>
 
     <ProgressBar
-        android:id="@+id/progress"
+        android:id="@+id/progress_text"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/guideline"
         app:layout_constraintEnd_toEndOf="parent"

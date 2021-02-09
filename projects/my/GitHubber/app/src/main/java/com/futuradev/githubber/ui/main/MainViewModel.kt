@@ -8,11 +8,9 @@ import androidx.lifecycle.viewModelScope
 import com.futuradev.githubber.data.local.AppDatabase
 import com.futuradev.githubber.data.local.DataPersistence
 import com.futuradev.githubber.data.model.Owner
-import com.futuradev.githubber.data.model.retrofit.response.UserResponse
 import com.futuradev.githubber.data.repository.GitRepository
 import com.futuradev.githubber.utils.getResult
 import com.futuradev.githubber.utils.log
-import com.futuradev.githubber.utils.wrapper.UserWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -28,6 +26,10 @@ class MainViewModel(private val gitRepository: GitRepository,
     val following = MutableLiveData<List<Owner>?>()
 
     val user = database.userDao().getUserLive()
+
+    fun userLoggedIn() = user.value != null
+
+    fun getUserProfileUrl() : String? = user.value?.html_url
 
     fun logout() = viewModelScope.launch(Dispatchers.IO) {
         dataPersistence.apply {

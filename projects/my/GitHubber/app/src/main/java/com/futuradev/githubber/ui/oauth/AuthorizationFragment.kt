@@ -90,15 +90,17 @@ class AuthorizationFragment(override val coroutineContext: CoroutineContext = Di
                 }
             }
 
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
+            override fun onPageFinished(webview: WebView?, url: String?) {
+                super.onPageFinished(webview, url)
 
                 if(url == "https://github.com/login/device") {
                     launch(coroutineContext) {
-                        progress.visibility = View.VISIBLE
+                        view?.let { progress_text.visibility = View.VISIBLE }
                         delay(1500)
-                        view?.loadUrl(getVerificationJavaScript())
-                        progress.visibility = View.GONE
+                        view?.let {
+                            webview?.loadUrl(getVerificationJavaScript())
+                            progress_text.visibility = View.GONE
+                        }
                     }
                 }
             }

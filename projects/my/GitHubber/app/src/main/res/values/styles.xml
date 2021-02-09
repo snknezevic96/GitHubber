@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="colorPrimary">@color/gold_text</item>
-        <item name="colorPrimaryDark">#194C5F</item>
-        <item name="colorAccent">@color/gold_dark</item>
+    <style name="ToolbarTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/color_gold_text</item>
+        <item name="colorPrimaryDark">@color/color_dark_mid</item>
+        <item name="colorAccent">@color/color_gold_dark</item>
+
+        <!-- drawer menu -->
         <item name="drawerArrowStyle">@style/Hamburger</item>
 
-        <!-- menu dots -->
-        <item name="android:textColorSecondary">@color/gold_text</item>
+        <!-- options menu (dots) -->
+        <item name="android:textColorSecondary">@color/color_gold_et_bg</item>
     </style>
 
     <style name="Hamburger" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="spinBars">true</item>
-        <item name="color">@color/gold_text</item>
+        <item name="color">@color/gold_new</item>
     </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light">

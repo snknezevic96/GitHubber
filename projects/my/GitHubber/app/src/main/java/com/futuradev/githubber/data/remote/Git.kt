@@ -1,7 +1,7 @@
 package com.futuradev.githubber.data.remote
 
-import com.futuradev.githubber.data.model.Owner
 import com.futuradev.githubber.data.model.Repository
+import com.futuradev.githubber.data.model.entity.User
 import com.futuradev.githubber.data.model.retrofit.response.*
 import retrofit2.http.*
 
@@ -24,11 +24,11 @@ interface Git {
     suspend fun getToken(@Url url: String) : TokenResponse
 
     @GET("user")
-    suspend fun getUserData(@Header("Authorization") token : String) : UserResponse
+    suspend fun getUserData(@Header("Authorization") token : String) : User
 
     @GET("user/followers")
-    suspend fun getFollowers(@Header("Authorization") token : String) : List<Owner>
+    suspend fun getFollowers(@Header("Authorization") token : String) : OwnersResponse
 
     @GET("user/following")
-    suspend fun getFollowing(@Header("Authorization") token : String) : List<Owner>
+    suspend fun getFollowing(@Header("Authorization") token : String) : OwnersResponse
 }
