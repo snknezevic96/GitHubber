@@ -1,13 +1,13 @@
 package com.futuradev.githubber.ui.main
 
 import android.os.Handler
+import android.view.Menu
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.futuradev.githubber.data.local.AppDatabase
 import com.futuradev.githubber.data.local.DataPersistence
 import com.futuradev.githubber.data.model.Owner
-import com.futuradev.githubber.data.model.retrofit.response.UserResponse
 import com.futuradev.githubber.data.repository.GitRepository
 import com.futuradev.githubber.utils.getResult
 import com.futuradev.githubber.utils.log
@@ -20,19 +20,28 @@ class MainViewModel(private val gitRepository: GitRepository,
 
     private var timeToCloseApp = false
 
-    val user = MutableLiveData<UserResponse>()
-    val followers = MutableLiveData<List<Owner>>()
-    val following = MutableLiveData<List<Owner>>()
+    var menu : Menu? = null
 
-    fun getUser(userId: Int) = viewModelScope.launch(Dispatchers.IO) {
-        database.userDao().getUser(userId)?.let {
-            user.postValue(it)
+    val followers = MutableLiveData<List<Owner>?>()
+    val following = MutableLiveData<List<Owner>?>()
 
-            getFollowers()
+    val user = database.userDao().getUserLive()
+
+    fun userLoggedIn() = user.value != null
+
+    fun getUserProfileUrl() : String? = user.value?.html_url
+
+    fun logout() = viewModelScope.launch(Dispatchers.IO) {
+        dataPersistence.apply {
+            userToken = ""
+            deviceCode = ""
+            userCode = ""
+            userId = -1
         }
+        database.userDao().deleteUser()
     }
 
-    private suspend fun getFollowers() = viewModelScope.launch(Dispatchers.IO) {
+    fun getFollowers() = viewModelScope.launch(Dispatchers.IO) {
         gitRepository.getFollowers().getResult(
             success = {
                 followers.postValue(it)

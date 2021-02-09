@@ -1,13 +1,10 @@
 package com.futuradev.githubber.utils.listeners
 
-import android.text.TextWatcher
-import com.futuradev.githubber.utils.enum.SortType
-
 interface ToolbarListener {
 
-    fun toolbarLogoClicked()
+    fun setSearchVisibility(visibility: Int)
 
-    fun getTextWatcher() : TextWatcher? = null
+    fun requestSearchFocus()
 
-    fun sortBy(sortType: SortType)
+    fun setLoginButtonVisibility(visibility: Int)
 }

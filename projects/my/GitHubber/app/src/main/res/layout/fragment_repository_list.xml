@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/body"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:background="@color/dark_mid"
+    tools:background="@color/color_dark_mid"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.repository.list.RepositoryListFragment">
 
@@ -24,7 +25,7 @@
         android:textSize="24sp"
         android:visibility="gone"
         android:textAlignment="center"
-        android:textColor="@color/gold_text"
+        android:textColor="@color/color_gold_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

@@ -7,14 +7,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.futuradev.githubber.R
-import com.futuradev.githubber.data.model.CustomItemUrls
+import com.futuradev.githubber.data.model.ImageItemUrls
 import com.futuradev.githubber.utils.listeners.ImageRecyclerItemListener
 import kotlinx.android.synthetic.main.image_recycler_item.view.*
 
 class CustomRecyclerAdapter : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHolder>() {
 
     private var context : Context? = null
-    private var data = mutableListOf<CustomItemUrls>()
+    private var data = mutableListOf<ImageItemUrls>()
 
     var listener : ImageRecyclerItemListener? = null
 
@@ -28,7 +28,6 @@ class CustomRecyclerAdapter : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHol
         val current = data[position]
 
         holder.apply {
-
             context?.let {
                 Glide
                     .with(it)
@@ -47,7 +46,7 @@ class CustomRecyclerAdapter : RecyclerView.Adapter<CustomRecyclerAdapter.ViewHol
         val thumbnail = itemView.thumbnail
     }
 
-    fun setData(list : List<CustomItemUrls>)  {
+    fun setData(list : List<ImageItemUrls>)  {
 
         data.clear()
         data.addAll(list)

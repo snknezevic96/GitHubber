@@ -1,6 +1,9 @@
 package com.futuradev.githubber.utils
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
+import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -65,7 +68,9 @@ fun View.showSnackMessage(message: String) {
         .show()
 }
 
-fun String.formatDate() : String {
+fun String?.formatDate() : String? {
+    this ?: return null
+
     val formatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
     val outputDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     val outputTime = SimpleDateFormat("HH:mm", Locale.getDefault())
@@ -101,4 +106,9 @@ fun RecyclerView.smoothSnapToPosition(
     }
     smoothScroller.targetPosition = position
     layoutManager?.startSmoothScroll(smoothScroller)
+}
+
+fun Activity.navigateTo(activity : Class<*>) {
+    val intent = Intent(this, activity)
+    startActivity(intent)
 }

@@ -1,11 +1,6 @@
 package com.futuradev.githubber.data.model
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-
-@Entity
 class Owner(
-    @PrimaryKey
     var id: Int,
     var avatar_url: String,
     var events_url: String,

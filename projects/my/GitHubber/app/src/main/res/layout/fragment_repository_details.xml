@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_mid"
+    android:background="@color/color_dark_mid"
     android:padding="8dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.repository.details.RepositoryDetailsFragment">
@@ -25,10 +25,10 @@
         android:layout_height="wrap_content"
         android:textStyle="bold"
         android:textSize="21sp"
-        android:textColor="@color/gold_light"
+        android:textColor="@color/color_gold_light"
         tools:text="JohnDude022"/>
 
-    <com.futuradev.githubber.ui.ImageRecyclerView
+    <com.futuradev.githubber.ui.custom.ImageRecyclerView
         android:id="@+id/organizations_recycler"
         android:layout_width="0dp"
         android:layout_marginStart="8dp"
@@ -46,6 +46,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:id="@+id/body"
         android:padding="20dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_details"
@@ -67,7 +68,7 @@
             android:id="@+id/stars_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             tools:text="1020"
             android:textSize="16sp"
             app:layout_constraintTop_toTopOf="parent"
@@ -84,7 +85,7 @@
             android:layout_marginTop="8dp"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/gold"
+            android:textColor="@color/color_gold"
             android:layout_width="0dp"
             android:layout_height="wrap_content"/>
 
@@ -102,7 +103,7 @@
             app:layout_constraintStart_toEndOf="@id/code_language_image"
             app:layout_constraintTop_toTopOf="@id/code_language_image"
             app:layout_constraintBottom_toBottomOf="@id/code_language_image"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             android:layout_marginStart="8dp"
             android:textSize="18sp"
             tools:text="HTML"
@@ -117,7 +118,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@id/date_updated"
             app:layout_constraintEnd_toEndOf="parent"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             tools:text="Date created: 12/02/2021"/>
 
         <TextView
@@ -126,7 +127,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             tools:text="Last update: 12/02/2021"/>
 
         <androidx.constraintlayout.widget.Guideline
@@ -150,7 +151,7 @@
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:layout_height="match_parent"
-                android:textColor="@color/gold_text"
+                android:textColor="@color/color_gold_text"
                 tools:text="Here will go some text about description of this repository. That could be some small or some very big text, but it needs to go to mac 2 lines. I think this should be enough."/>
 
         </ScrollView>
@@ -171,7 +172,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:background="@color/colorDivider"
+            android:background="@color/color_dark_divider"
             app:layout_constraintTop_toBottomOf="@id/scroll_description"/>
 
         <ImageView
@@ -188,7 +189,7 @@
             android:id="@+id/watcher_number"
             android:layout_width="wrap_content"
             android:layout_marginStart="8dp"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             app:layout_constraintStart_toEndOf="@id/watcher_image"
             app:layout_constraintTop_toTopOf="@id/watcher_image"
             app:layout_constraintBottom_toBottomOf="@id/watcher_image"
@@ -209,7 +210,7 @@
             android:id="@+id/fork_number"
             android:layout_width="wrap_content"
             android:layout_marginStart="8dp"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             app:layout_constraintStart_toEndOf="@id/fork_image"
             app:layout_constraintTop_toTopOf="@id/fork_image"
             app:layout_constraintBottom_toBottomOf="@id/fork_image"
@@ -230,37 +231,13 @@
             android:id="@+id/issues_number"
             android:layout_width="wrap_content"
             android:layout_marginStart="8dp"
-            android:textColor="@color/gold_text"
+            android:textColor="@color/color_gold_text"
             app:layout_constraintStart_toEndOf="@id/issues_image"
             app:layout_constraintTop_toTopOf="@id/issues_image"
             app:layout_constraintBottom_toBottomOf="@id/issues_image"
             android:layout_height="wrap_content"
             tools:text="2"/>
 
-        <!--
-            <ImageView
-                android:id="@+id/issues_image"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:src="@drawable/ic_issue"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/issues_number"/>
-
-            <TextView
-                android:id="@+id/issues_number"
-                android:layout_width="wrap_content"
-                android:textColor="@color/red"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/issues_image"
-                app:layout_constraintBottom_toBottomOf="@id/issues_image"
-                android:layout_height="wrap_content"
-                tools:text="1"/>-->
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

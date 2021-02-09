@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.futuradev.githubber.data.local.AppDatabase
 import com.futuradev.githubber.data.local.DataPersistence
-import com.futuradev.githubber.data.model.retrofit.response.UserResponse
+import com.futuradev.githubber.data.model.entity.User
 import com.futuradev.githubber.data.model.retrofit.response.VerificationCodesResponse
 import com.futuradev.githubber.data.repository.GitRepository
 import com.futuradev.githubber.utils.getResult
@@ -18,12 +18,13 @@ class AuthorizationViewModel(private val gitRepository: GitRepository,
                              private val dataPersistence: DataPersistence) : ViewModel() {
 
     val verificationCodes = MutableLiveData<VerificationCodesResponse>()
-    val user = MutableLiveData<UserResponse>()
+    val user = MutableLiveData<User>()
 
     private suspend fun getUserData(token: String) {
 
         gitRepository.getUserData(token).getResult(
             success = {
+                dataPersistence.userId = it.id
                 database.userDao().insert(it)
                 user.postValue(it)
                 log("GIT SUCCESS - user data")

@@ -1,6 +1,5 @@
 package com.futuradev.githubber.di
 
-import com.futuradev.githubber.BuildConfig.*
 import com.futuradev.githubber.data.local.DataPersistence
 import com.futuradev.githubber.data.remote.Git
 import com.futuradev.githubber.data.remote.GitService

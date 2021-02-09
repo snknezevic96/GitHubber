@@ -2,10 +2,11 @@ package com.futuradev.githubber.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.futuradev.githubber.data.model.retrofit.response.UserResponse
+import com.futuradev.githubber.data.local.dao.UserDao
+import com.futuradev.githubber.data.model.entity.User
 
 @Database(
-    entities = [UserResponse::class],
+    entities = [User::class],
     version = 1,
     exportSchema = true
 )

@@ -1,7 +1,5 @@
 package com.futuradev.githubber.ui.repository.list
 
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,21 +13,26 @@ import androidx.navigation.fragment.findNavController
 import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.ui.repository.RepositoryViewModel
+import com.futuradev.githubber.utils.*
 import com.futuradev.githubber.utils.enum.SortType
-import com.futuradev.githubber.utils.listeners.ToolbarListener
+import com.futuradev.githubber.utils.listeners.BrowserListener
 import com.futuradev.githubber.utils.listeners.RepositoryListener
-import com.futuradev.githubber.utils.listeners.SearchListener
-import com.futuradev.githubber.utils.showSnackMessage
+import com.futuradev.githubber.utils.listeners.ToolbarController
+import com.futuradev.githubber.utils.listeners.ToolbarListener
+import kotlinx.android.synthetic.main.fragment_repository_details.*
 import kotlinx.android.synthetic.main.fragment_repository_list.*
 import kotlinx.android.synthetic.main.image_recycler_view.*
 import kotlinx.android.synthetic.main.main_toolbar.*
 import kotlinx.coroutines.*
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
 import kotlin.coroutines.CoroutineContext
 
 
 class RepositoryListFragment(override val coroutineContext: CoroutineContext = Dispatchers.Main) :
-    Fragment(), CoroutineScope, ToolbarListener, RepositoryListener {
+    Fragment(), CoroutineScope, ToolbarController, RepositoryListener {
+
+    private val appConfig : AppConfig by inject()
 
     private val viewModel: RepositoryViewModel by sharedViewModel()
 
@@ -42,7 +45,6 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         return inflater.inflate(R.layout.fragment_repository_list, container, false)
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -53,12 +55,14 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         setObservers()
 
         search_placeholder.setOnClickListener {
-            (activity as SearchListener).requestSearchFocus()
+            (activity as ToolbarListener).requestSearchFocus()
         }
     }
 
     private fun customizeToolbar() {
-        (activity as SearchListener).setSearchVisibility(View.VISIBLE)
+        (activity as ToolbarListener).apply {
+            setSearchVisibility(View.VISIBLE)
+        }
     }
 
     private fun setAdapters() {
@@ -93,7 +97,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
         label_not_found.apply {
             visibility = View.VISIBLE
-            text = "Oops...There are no repositories that match search query."
+            text = resources.getString(R.string.fragment_repository_list_no_search_result)
         }
 
         search_placeholder.apply {
@@ -109,7 +113,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
         label_not_found.apply {
             visibility = View.VISIBLE
-            text = "Search GitHub\n repositories"
+            text = resources.getString(R.string.fragment_repository_list_search)
         }
 
         search_placeholder.apply {
@@ -120,12 +124,12 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         }
     }
 
-    private fun refreshRecycler(list: Array<Repository>) {
+    private fun refreshRecycler(list: Array<Repository?>) {
         repository_recycler.visibility = View.VISIBLE
         label_not_found.visibility = View.GONE
         search_placeholder.visibility = View.GONE
 
-        adapter?.refreshData(list.toList())
+        adapter?.refreshData(list.filterNotNull().toList())
     }
 
     override fun toolbarLogoClicked() {
@@ -166,16 +170,16 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
     }
 
     override fun openOwnersProfile(profileUrl: String) {
-        openInBrowser(profileUrl)
+        appConfig.isPremiumVersion {
+            (activity as? BrowserListener)?.openInBrowser(profileUrl)
+        }
     }
 
     override fun openDetails(repositoryId: Int) {
-        val action = RepositoryListFragmentDirections.toDetails(repositoryId)
-        findNavController().navigate(action)
-    }
-
-    private fun openInBrowser(url: String) {
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-        startActivity(browserIntent)
+        appConfig.isPremiumVersion {
+            RepositoryListFragmentDirections.toDetails(repositoryId).also {
+                findNavController().navigate(it)
+            }
+        }
     }
 }
