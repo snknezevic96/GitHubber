@@ -1,6 +1,6 @@
 package com.futuradev.githubber.data.model
 
-class Owner(
+data class Owner(
     var id: Int,
     var avatar_url: String,
     var events_url: String,

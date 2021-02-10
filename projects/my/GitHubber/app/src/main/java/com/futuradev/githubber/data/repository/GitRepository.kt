@@ -1,5 +1,6 @@
 package com.futuradev.githubber.data.repository
 
+import com.futuradev.githubber.data.model.Organization
 import com.futuradev.githubber.data.model.Owner
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.data.model.entity.User
@@ -12,7 +13,7 @@ interface GitRepository {
 
     suspend fun search(query: String) : ResultWrapper<SearchResponse>
 
-    suspend fun getUserOrganizations(user: String) : ResultWrapper<OrganizationsResponse>
+    suspend fun getUserOrganizations(user: String) : ResultWrapper<List<Organization>>
 
     suspend fun getVerificationCodes() : ResultWrapper<VerificationCodesResponse>
 

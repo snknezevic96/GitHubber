@@ -8,5 +8,19 @@
 
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+
+        <!-- option MENU text -->
+        <item name="android:itemTextAppearance">@style/MyActionBar.MenuTextStyle</item>
+        <!-- option MENU item bg -->
+        <item name="android:itemBackground">@drawable/menu_popup_selector</item>
+
     </style>
+
+
+
+    <style name="MyActionBar.MenuTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/color_gold_text</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
 </resources>

@@ -19,6 +19,7 @@ import com.futuradev.githubber.utils.listeners.BrowserListener
 import com.futuradev.githubber.utils.listeners.RepositoryListener
 import com.futuradev.githubber.utils.listeners.ToolbarController
 import com.futuradev.githubber.utils.listeners.ToolbarListener
+import com.futuradev.githubber.utils.wrapper.ViewWrapper
 import kotlinx.android.synthetic.main.fragment_repository_details.*
 import kotlinx.android.synthetic.main.fragment_repository_list.*
 import kotlinx.android.synthetic.main.image_recycler_view.*
@@ -75,20 +76,25 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
     private fun setObservers() {
 
-        viewModel.repositories.observe(viewLifecycleOwner, Observer {
+        viewModel.repositoriesLive.observe(viewLifecycleOwner, Observer {
             it ?: return@Observer
 
-            if (it.isEmpty())
-                showSearchNotFoundPlaceholder()
-            else
-                refreshRecycler(it)
-        })
-
-        viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
-            it ?: return@Observer
-
-            view?.showSnackMessage(it)
-            viewModel.errorMessage.value = null
+            when(it) {
+                is ViewWrapper.Success -> {
+                    progress.visibility = View.GONE
+                    if (it.response.isEmpty())
+                        showSearchNotFoundPlaceholder()
+                    else
+                        refreshRecycler(it.response)
+                }
+                is ViewWrapper.InProgress -> {
+                    progress.visibility = View.VISIBLE
+                }
+                is ViewWrapper.Failure -> {
+                    progress.visibility = View.GONE
+                    view?.showSnackMessage(resources.getString(it.messageId))
+                }
+            }
         })
     }
 
@@ -97,7 +103,7 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
 
         label_not_found.apply {
             visibility = View.VISIBLE
-            text = resources.getString(R.string.fragment_repository_list_no_search_result)
+            text = resources.getString(R.string.error_no_search_query)
         }
 
         search_placeholder.apply {
@@ -124,12 +130,12 @@ class RepositoryListFragment(override val coroutineContext: CoroutineContext = D
         }
     }
 
-    private fun refreshRecycler(list: Array<Repository?>) {
+    private fun refreshRecycler(list: Array<Repository>) {
         repository_recycler.visibility = View.VISIBLE
         label_not_found.visibility = View.GONE
         search_placeholder.visibility = View.GONE
 
-        adapter?.refreshData(list.filterNotNull().toList())
+        adapter?.refreshData(list)
     }
 
     override fun toolbarLogoClicked() {

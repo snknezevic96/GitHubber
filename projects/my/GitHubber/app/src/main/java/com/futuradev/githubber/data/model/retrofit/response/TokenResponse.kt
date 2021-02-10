@@ -1,9 +1,12 @@
 package com.futuradev.githubber.data.model.retrofit.response
 
+import com.google.gson.annotations.SerializedName
+
 data class TokenResponse(
-    val access_token: String,
+    @SerializedName("access_token")
+    val token: String,
+    @SerializedName("scope")
     val scope: String,
-    val token_type: String
-) {
-    constructor(access_token: String) : this(access_token, "", "")
-}
+    @SerializedName("token_type")
+    val tokenType: String
+)

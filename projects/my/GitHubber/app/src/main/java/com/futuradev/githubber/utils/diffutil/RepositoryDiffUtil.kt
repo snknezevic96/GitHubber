@@ -4,8 +4,8 @@ import androidx.recyclerview.widget.DiffUtil
 import com.futuradev.githubber.data.model.Repository
 
 class RepositoryDiffUtil(
-    private val oldRepositories: List<Repository>,
-    private val newRepositories: List<Repository>) : DiffUtil.Callback() {
+    private val oldRepositories: Array<Repository>,
+    private val newRepositories: Array<Repository>) : DiffUtil.Callback() {
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldRepositories[oldItemPosition].id == newRepositories[newItemPosition].id

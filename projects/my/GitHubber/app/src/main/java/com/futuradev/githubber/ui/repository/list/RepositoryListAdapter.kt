@@ -23,10 +23,10 @@ class RepositoryListAdapter : RecyclerView.Adapter<RepositoryListAdapter.ViewHol
         this.itemListener = itemListener
     }
 
-    fun refreshData(newData: List<Repository>) {
+    fun refreshData(newData: Array<Repository>) {
         val diffResult = DiffUtil.calculateDiff(
             RepositoryDiffUtil(
-                repositories,
+                repositories.toTypedArray(),
                 newData)
         )
         this.repositories.clear()

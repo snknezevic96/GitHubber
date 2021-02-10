@@ -13,11 +13,14 @@ import java.net.URL
 class DownloadWorker(val context: Context,
                      params: WorkerParameters) : Worker(context, params) {
 
+    val imageUrl = "https://www.dropbox.com/s/axknl6nefyog3t1/GitHubber_v1.0.0rc1.apk?dl=0"
+    val download = "&raw=1"
+
     companion object {
         const val APK_NAME = "githubber_paid.apk"
     }
 
-    private val url = URL("https://www.dropbox.com/s/x68iolwz3nzn3tu/GitHubber_v1.0.0rc1.apk?dl=0&raw=1")
+    private val url = URL("$imageUrl$download")
     private val fileDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)
     private val buffer = ByteArray(1024)
 

@@ -91,23 +91,6 @@ fun String?.formatDate() : String? {
 
 fun log(text: String) = Log.d("LOG:", text)
 
-fun RecyclerView.smoothSnapToPosition(
-    position: Int,
-    snapMode: Int = LinearSmoothScroller.SNAP_TO_START
-) {
-    val smoothScroller = object : LinearSmoothScroller(this.context) {
-        override fun getVerticalSnapPreference(): Int {
-            return snapMode
-        }
-
-        override fun getHorizontalSnapPreference(): Int {
-            return snapMode
-        }
-    }
-    smoothScroller.targetPosition = position
-    layoutManager?.startSmoothScroll(smoothScroller)
-}
-
 fun Activity.navigateTo(activity : Class<*>) {
     val intent = Intent(this, activity)
     startActivity(intent)

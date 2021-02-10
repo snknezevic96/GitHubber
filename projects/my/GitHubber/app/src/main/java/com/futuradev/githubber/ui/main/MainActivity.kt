@@ -217,7 +217,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                             override fun downloadError() {
                                 dismiss()
-                                body.showSnackMessage(resources.getString(R.string.download_dialog_error))
+                                body.showSnackMessage(resources.getString(R.string.error_download))
                             }
 
                         }

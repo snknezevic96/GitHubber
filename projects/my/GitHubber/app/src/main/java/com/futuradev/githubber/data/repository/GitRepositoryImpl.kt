@@ -1,6 +1,7 @@
 package com.futuradev.githubber.data.repository
 
 
+import com.futuradev.githubber.data.model.Organization
 import com.futuradev.githubber.data.model.Owner
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.data.model.entity.User
@@ -16,7 +17,7 @@ class GitRepositoryImpl(private val gitService: GitService) : GitRepository {
     override suspend fun search(query: String) : ResultWrapper<SearchResponse> =
         gitService.search(query)
 
-    override suspend fun getUserOrganizations(user: String): ResultWrapper<OrganizationsResponse> =
+    override suspend fun getUserOrganizations(user: String): ResultWrapper<List<Organization>> =
         gitService.getUserOrganizations(user)
 
     override suspend fun getVerificationCodes(): ResultWrapper<VerificationCodesResponse> =

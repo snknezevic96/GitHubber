@@ -1,5 +1,7 @@
 package com.futuradev.githubber.data.remote
 
+import com.futuradev.githubber.data.model.Organization
+import com.futuradev.githubber.data.model.Owner
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.data.model.entity.User
 import com.futuradev.githubber.data.model.retrofit.response.*
@@ -15,7 +17,7 @@ interface Git {
     suspend fun search(@Query("q") query: String) : SearchResponse
 
     @GET("users/{username}/orgs")
-    suspend fun getUserOrganizations(@Path("username") user: String) : OrganizationsResponse
+    suspend fun getUserOrganizations(@Path("username") user: String) : List<Organization>
 
     @POST
     suspend fun requestVerificationCodes(@Url url: String) : VerificationCodesResponse
@@ -27,8 +29,8 @@ interface Git {
     suspend fun getUserData(@Header("Authorization") token : String) : User
 
     @GET("user/followers")
-    suspend fun getFollowers(@Header("Authorization") token : String) : OwnersResponse
+    suspend fun getFollowers(@Header("Authorization") token : String) : List<Owner>
 
     @GET("user/following")
-    suspend fun getFollowing(@Header("Authorization") token : String) : OwnersResponse
+    suspend fun getFollowing(@Header("Authorization") token : String) : List<Owner>
 }

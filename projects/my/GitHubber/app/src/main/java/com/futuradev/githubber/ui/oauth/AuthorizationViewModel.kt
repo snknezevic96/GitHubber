@@ -3,6 +3,7 @@ package com.futuradev.githubber.ui.oauth
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.futuradev.githubber.R
 import com.futuradev.githubber.data.local.AppDatabase
 import com.futuradev.githubber.data.local.DataPersistence
 import com.futuradev.githubber.data.model.entity.User
@@ -18,6 +19,7 @@ class AuthorizationViewModel(private val gitRepository: GitRepository,
                              private val dataPersistence: DataPersistence) : ViewModel() {
 
     val verificationCodes = MutableLiveData<VerificationCodesResponse>()
+    val errorMessage = MutableLiveData<Int>()
     val user = MutableLiveData<User>()
 
     private suspend fun getUserData(token: String) {
@@ -27,13 +29,12 @@ class AuthorizationViewModel(private val gitRepository: GitRepository,
                 dataPersistence.userId = it.id
                 database.userDao().insert(it)
                 user.postValue(it)
-                log("GIT SUCCESS - user data")
             },
             genericError = { code, message ->
-                log("GIT GENERIC ERROR $code - get user data; message=$message")
+                errorMessage.postValue(R.string.error_generic)
             },
             networkError = {
-                log("GIT NETWORK ERROR - get user data")
+                errorMessage.postValue(R.string.error_network)
             }
         )
     }
@@ -57,14 +58,12 @@ class AuthorizationViewModel(private val gitRepository: GitRepository,
                     deviceCode = it.deviceCode
                 }
                 verificationCodes.postValue(it)
-                log("GIT SUCCESS - get verification code")
-                log("verification_response=$it")
             },
             genericError = { code, message ->
-                log("GIT GENERIC ERROR $code - get verification code; message=$message")
+                errorMessage.postValue(R.string.error_generic)
             },
             networkError = {
-                log("GIT NETWORK ERROR - get verification code")
+                errorMessage.postValue(R.string.error_network)
             }
         )
     }
@@ -74,17 +73,14 @@ class AuthorizationViewModel(private val gitRepository: GitRepository,
         verificationCodes.value?.deviceCode?.let {
             gitRepository.getToken(it).getResult(
                 success = {
-                    launch { getUserData(it.access_token) }
-                    dataPersistence.userToken = it.access_token
-
-                    log("GIT SUCCESS - get token")
-                    log("token_response=$it")
+                    launch { getUserData(it.token) }
+                    dataPersistence.userToken = it.token
                 },
                 genericError = { code, message ->
-                    log("GIT GENERIC ERROR $code - get token; message=$message")
+                    errorMessage.postValue(R.string.error_generic)
                 },
                 networkError = {
-                    log("GIT NETWORK ERROR - get token")
+                    errorMessage.postValue(R.string.error_network)
                 }
             )
         }

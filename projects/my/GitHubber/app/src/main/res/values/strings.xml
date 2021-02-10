@@ -9,18 +9,20 @@
     <string name="download_dialog_title">Download premium app</string>
     <string name="download_dialog_download_button">Download</string>
     <string name="download_dialog_cancel_button">Cancel</string>
-    <string name="download_dialog_progress">%s (%d\%%)</string>
+    <string name="download_dialog_progress" formatted="false">%s (%d\%%)</string>
     <string name="downlaod_dialog_progress_text">Downloading</string>
-
-    <string name="download_dialog_error">Oops, something went wrong with the installation. Please try again later.</string>
-
 
     <string name="close_app">Please click BACK again to close app.</string>
 
     <string name="fragment_repository_details_created">Created:</string>
     <string name="fragment_repository_details_updated">Updated:</string>
 
-    <string name="fragment_repository_list_no_search_result">Oops…There are no repositories that match search query.</string>
     <string name="fragment_repository_list_search">Search GitHub\nrepositories</string>
+
+    <string name="error_generic">Oops, some error occurred.</string>
+    <string name="error_network">Network error.\nPlease check internet connection.</string>
+    <string name="error_no_more_searching">Sorry, but GitHub says no more searching.\nToo many API requests :/</string>
+    <string name="error_download">Oops, something went wrong with the installation.\nPlease try again later.</string>
+    <string name="error_no_search_query">Oops…There are no repositories that match search query.</string>
 
 </resources>

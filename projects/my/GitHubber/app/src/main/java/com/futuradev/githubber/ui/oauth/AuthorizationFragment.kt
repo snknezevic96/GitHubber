@@ -1,5 +1,6 @@
 package com.futuradev.githubber.ui.oauth
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.futuradev.githubber.R
 import com.futuradev.githubber.utils.listeners.ToolbarListener
+import com.futuradev.githubber.utils.showSnackMessage
 import kotlinx.android.synthetic.main.fragment_authorization.*
 import kotlinx.coroutines.*
 import org.koin.android.viewmodel.ext.android.viewModel
@@ -55,8 +57,15 @@ class AuthorizationFragment(override val coroutineContext: CoroutineContext = Di
 
             findNavController().popBackStack()
         })
+
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer {
+            it ?: return@Observer
+
+            view?.showSnackMessage(resources.getString(it))
+        })
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun setupWebView() {
         val webSettings = web_view.settings
 

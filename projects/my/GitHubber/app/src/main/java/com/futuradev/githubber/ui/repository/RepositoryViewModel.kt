@@ -1,96 +1,89 @@
 package com.futuradev.githubber.ui.repository
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.futuradev.githubber.R
 import com.futuradev.githubber.data.model.Organization
 import com.futuradev.githubber.data.model.Repository
 import com.futuradev.githubber.data.repository.GitRepository
 import com.futuradev.githubber.utils.enum.SortType
 import com.futuradev.githubber.utils.getResult
+import com.futuradev.githubber.utils.wrapper.ViewWrapper
+import com.futuradev.githubber.utils.wrapper.ViewWrapper.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class RepositoryViewModel(private val gitRepository: GitRepository) : ViewModel() {
 
     val repository  = MutableLiveData<Repository>()
-    val repositories = MutableLiveData<Array<Repository?>?>()
-    val errorMessage = MutableLiveData<String>()
-    val userOrganizations = MutableLiveData<List<Organization>>()
+    var repositories : Array<Repository>? = null
+    val repositoriesLive = MutableLiveData<ViewWrapper<Array<Repository>>>()
+    val userOrganizationsLive = MutableLiveData<ViewWrapper<List<Organization>>>()
 
     private var sortType : SortType? = null
 
-    private fun Array<Repository?>.findRepository(repositoryId: Int) : Repository? = find { it?.id == repositoryId }
+    private fun Array<Repository>.findRepository(repositoryId: Int) : Repository? = find { it.id == repositoryId }
 
     fun findRepository(repositoryId: Int) = viewModelScope.launch(Dispatchers.IO) {
-        repositories.value
+        repositories
             ?.findRepository(repositoryId)
             ?.let { repository.postValue(it) }
     }
 
-    private fun postRepositories(sortType: SortType?, list: Array<Repository?>?) {
-
-        repositories.postValue(list?.apply {
-
+    private fun postRepositories(sortType: SortType?, list: Array<Repository>?) {
+        val updated = list?.apply {
             when(sortType) {
-                SortType.STARS -> sortByDescending { it?.stargazers_count }
-                SortType.FORKS -> sortByDescending { it?.forks_count }
-                SortType.UPDATED -> sortByDescending { it?.updated_at }
+                SortType.STARS -> sortByDescending { it.stargazers_count }
+                SortType.FORKS -> sortByDescending { it.forks_count }
+                SortType.UPDATED -> sortByDescending { it.updated_at }
             }
-        } ?: emptyArray())
+        } ?: emptyArray()
+
+        repositoriesLive.postValue(Success(updated))
     }
 
     fun sortBy(sortType: SortType) = viewModelScope.launch(Dispatchers.IO) {
         this@RepositoryViewModel.sortType = sortType
 
-        postRepositories(sortType, repositories.value)
+        postRepositories(sortType, repositories)
     }
 
     fun search(query: String) = viewModelScope.launch(Dispatchers.IO) {
+        repositoriesLive.postValue(InProgress)
 
         gitRepository.search(query).getResult(
             success = {
-                      postRepositories(sortType, it.items?.toTypedArray())
+                repositories = it.items?.toTypedArray()
+                postRepositories(sortType, repositories)
             },
             genericError = { code, message ->
                 when(code) {
-                    403 -> {
-                        errorMessage.postValue("Sorry, but GitHub says no more searching.\nToo many API requests :/")
-                    }
-                    else -> {
-                        errorMessage.postValue("Oops, some error occurred.")
-                    }
+                    403 -> repositoriesLive.postValue(Failure(R.string.error_no_more_searching))
+                    else -> repositoriesLive.postValue(Failure(R.string.error_generic))
                 }
-                Log.d("REPOSITORY", "ERROR_CODE=$code;\nmessage=$message")
             },
             networkError = {
-                errorMessage.postValue("Network error.\nPlease check internet connection.")
-                Log.d("REPOSITORY", "NETWORK ERROR")
+                repositoriesLive.postValue(Failure(R.string.error_network))
             }
         )
     }
 
     fun getUserOrganizations(user: String) = viewModelScope.launch(Dispatchers.IO) {
+        userOrganizationsLive.postValue(InProgress)
 
         gitRepository.getUserOrganizations(user).getResult(
             success = {
-                userOrganizations.postValue(it)
+                userOrganizationsLive.postValue(Success(it))
             },
             genericError = { code, message ->
                 when(code) {
-                    403 -> {
-                        errorMessage.postValue("Sorry, but GitHub says no more searching.\nToo many API requests :/")
-                    }
-                    else -> {
-                        errorMessage.postValue("Oops, some error occurred.")
-                    }
+                    403 -> userOrganizationsLive.postValue(Failure(R.string.error_no_more_searching))
+                    else -> userOrganizationsLive.postValue(Failure(R.string.error_generic))
                 }
-                Log.d("REPOSITORY", "ERROR_CODE=$code; /n message=$message")
             },
             networkError = {
-                errorMessage.postValue("Network error.\nPlease check internet connection.")
-                Log.d("REPOSITORY", "NETWORK ERROR")
+                userOrganizationsLive.postValue(Failure(R.string.error_network))
             }
         )
     }

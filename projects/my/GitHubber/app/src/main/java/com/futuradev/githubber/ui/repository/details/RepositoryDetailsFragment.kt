@@ -21,6 +21,8 @@ import com.futuradev.githubber.utils.manager.KeyboardManager
 import com.futuradev.githubber.utils.listeners.ToolbarListener
 import com.futuradev.githubber.utils.formatDate
 import com.futuradev.githubber.utils.listeners.BrowserListener
+import com.futuradev.githubber.utils.showSnackMessage
+import com.futuradev.githubber.utils.wrapper.ViewWrapper
 import kotlinx.android.synthetic.main.fragment_repository_details.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
@@ -69,9 +71,18 @@ class RepositoryDetailsFragment : Fragment() {
             bindData(it)
         })
 
-        viewModel.userOrganizations.observe(viewLifecycleOwner, Observer {
+        viewModel.userOrganizationsLive.observe(viewLifecycleOwner, Observer {
             it ?: return@Observer
-            organizations_recycler.setData("Organizations", it.map { ImageItemUrls(it.avatar_url, null) })
+
+            when(it) {
+                is ViewWrapper.Success -> {
+                    organizations_recycler.setData("Organizations", it.response.map { ImageItemUrls(it.avatar_url, null) })
+                }
+                is ViewWrapper.InProgress -> {}
+                is ViewWrapper.Failure -> {
+                    view?.showSnackMessage(resources.getString(it.messageId))
+                }
+            }
         })
     }
 
